@@ -3,6 +3,7 @@
 import { adminDb } from "@/lib/firebase-admin";
 import { signIn, signOut } from "@/auth";
 import { sleep } from "./utils";
+import { revalidatePath } from "next/cache";
 
 export async function handleSubmit(formData: FormData) {
 
@@ -31,18 +32,58 @@ export async function handleClick(formData: FormData) {
         console.log(`{${key}: ${value}}`);
     });
 
-  // await sleep(2000); // Simulate a delay for async operation
-   await adminDb.collection("mouvement").add({
-    type : formData.get("type") as string,
-    name: formData.get("name") as string,
-    montant: Number(formData.get("montant")),
-    // Add other form fields as needed
-    createdAt: Date.now(),
-  });
+    // await sleep(2000); // Simulate a delay for async operation
+    await adminDb.collection("mouvement").add({
+        type: formData.get("type") as string,
+        name: formData.get("name") as string,
+        montant: Number(formData.get("montant")),
+        // Add other form fields as needed
+        createdAt: Date.now(),
+    });
     //console.log("form", formData)
 }
 
 export async function handleSignout(formData: FormData) {
     await signOut()
+}
+
+export async function addClient(values: {
+    name: string;
+    role: string;
+    address: string;
+    phone: string;
+    email: string;
+    avatar: string;
+}) {
+    await adminDb.collection("clients").add({
+        ...values,
+        createdAt: Date.now(),
+    });
+
+    revalidatePath("/dashboard/clients");
+}
+
+export async function updateClient(formData: FormData) {
+
+    const clientId = "dfsdfsjfhjshdhsdhj";
+
+    const values = {
+        name: formData.get("name") as string,
+        role: formData.get("role") as string,
+        address: formData.get("address") as string,
+        phone: formData.get("phone") as string,
+        email: formData.get("email") as string,
+    };
+    await adminDb.collection("clients").doc(clientId).update({
+        ...values,
+        updatedAt: Date.now(),
+    });
+
+    revalidatePath("/dashboard/clients");
+}
+
+export async function deleteClient(clientId: string) {
+    await adminDb.collection("clients").doc(clientId).delete();
+    revalidatePath("/dashboard/clients");
 }
 
