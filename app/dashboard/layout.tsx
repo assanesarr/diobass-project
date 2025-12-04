@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { AppSidebar } from "@/app/dashboard/components/app-sidebar"
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { SiteHeader } from './components/site-header';
+import { adminDb } from '@/lib/firebase-admin';
 
 export default async function DashboardLayout({
     children,
@@ -11,6 +12,9 @@ export default async function DashboardLayout({
     children: React.ReactNode;
 }>) {
     const user = (await auth())?.user;
+    const clinets = await adminDb.collection("clients").orderBy("createdAt").get().then((snapshot) => {
+            return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        });
 
     if (!user) {
         redirect('/login');
@@ -29,7 +33,7 @@ export default async function DashboardLayout({
                 } as React.CSSProperties
             }
         >
-            <AppSidebar variant="inset" user={user} />
+            <AppSidebar variant="inset" user={user} clients={clinets} />
             <SidebarInset>
                 <SiteHeader />
                 <div className="flex flex-1 flex-col">{children}</div>

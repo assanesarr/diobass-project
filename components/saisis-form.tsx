@@ -14,21 +14,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar"
 import { IconCirclePlusFilled } from "@tabler/icons-react"
-import { handleClick } from "@/lib/actions"
-import { useFormStatus } from "react-dom"
+import { addMouvement } from "@/lib/actions"
 import { Spinner } from "./ui/spinner"
-import React, { useEffect, useTransition } from "react"
+import React from "react"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select"
 
-export function DialogSaisis() {
-    const [type, setType] = React.useState<"encaissement" | "decaissement">("encaissement")
-    const { pending } = useFormStatus()
-    const [isPending, startTransition] = useTransition()
-
-    console.log("pending", isPending)
-
-    useEffect(() => {
-        console.log("Type changed:", pending);
-    }, [pending]);
+export function DialogSaisis({ clients }: { clients?: any[] }) {
+    const [type, setType] = React.useState<"encaissement" | "decaissement">("encaissement");
 
     return (
         <Dialog>
@@ -53,28 +45,59 @@ export function DialogSaisis() {
                 </SidebarMenuItem>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
-                <form action={handleClick} className="grid gap-4">
+                <form action={addMouvement} className="grid gap-4">
                     <input type="hidden" name="type" value={type} />
                     <DialogHeader>
                         <DialogTitle className={type === "decaissement" ? "text-red-600" : "text-green-600"}>Operation {type} </DialogTitle>
-                        <DialogDescription>
-                            Make changes to your profile here. Click save when you&apos;re
-                            done.
-                        </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4">
                         <div className="grid gap-3">
-                            <Label htmlFor="name-1">Name</Label>
-                            <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
+                            <Label htmlFor="name-1">Libelle</Label>
+                            <Input id="name-1" name="libelle" />
                         </div>
                         <div className="grid gap-3">
                             <Label htmlFor="montant-1">Montant</Label>
-                            <Input id="montant-1" name="montant" defaultValue="120000" />
+                            <Input id="montant-1" name="montant" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex flex-col gap-3">
-                                <Label htmlFor="target">Target</Label>
-                                <Input id="target" name="target"  />
+                                <Label htmlFor="limit">Compagnie</Label>
+                                <Select name="compagnie">
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Select a compagnies" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Compagnies</SelectLabel>
+                                            <SelectItem value="CMAGGM">CMAGGM</SelectItem>
+                                            <SelectItem value="MSC">MSC</SelectItem>
+                                            <SelectItem value="MAESLINE">MAESLINE</SelectItem>
+                                            <SelectItem value="SOCAPAO">SOCAPAO</SelectItem>
+                                            <SelectItem value="ONE">ONE</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex flex-col gap-3">
+                                <Label htmlFor="Clients">Clients</Label>
+                                <Select name="clients">
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Select a clients" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {
+                                                clients && clients.length > 0 ? (
+                                                    clients.map((client) => (
+                                                        <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
+                                                    ))
+                                                ) : (
+                                                    <SelectItem value="none">No clients available</SelectItem>
+                                                )   
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="flex flex-col gap-3">
                                 <Label htmlFor="limit">Limit</Label>
@@ -86,7 +109,7 @@ export function DialogSaisis() {
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
-                        <Button type="submit" disabled={pending}> {pending && <Spinner className="size-4" />}Save changes</Button>
+                        <Button type="submit" > Save changes</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

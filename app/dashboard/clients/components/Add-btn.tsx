@@ -123,7 +123,7 @@ export default function AddBtn() {
                                                     <FieldLabel htmlFor={field.name}>{f.label}</FieldLabel>
                                                     <Input
                                                         id={field.name}
-                                                        type={f?.type ? "file" : "text"}
+                                                       // type={f?.type ? "file" : "text"}
                                                         name={field.name}
                                                         value={field.state.value}
                                                         onBlur={field.handleBlur}

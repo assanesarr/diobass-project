@@ -1,5 +1,3 @@
-import { IconPlus } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
 import CardUser from "./components/card-user";
 import AddBtn from "./components/Add-btn";
 import { adminDb } from "@/lib/firebase-admin";
@@ -8,7 +6,7 @@ import { adminDb } from "@/lib/firebase-admin";
 
 export default async function ClientsPage() {
 
-    const clinets = await adminDb.collection("clients").get().then((snapshot) => {
+    const clinets = await adminDb.collection("clients").orderBy("createdAt").get().then((snapshot) => {
         return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     });
 

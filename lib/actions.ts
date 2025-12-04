@@ -25,22 +25,29 @@ export async function handleSubmit(formData: FormData) {
     // Revalidate cache
 }
 
-export async function handleClick(formData: FormData) {
+export async function deleteItem(formData: FormData) {
 
-    formData.entries().forEach(([key, value]) => {
+    const itemId = formData.get("id") as string;
 
-        console.log(`{${key}: ${value}}`);
-    });
+    await adminDb.collection("mouvement").doc(itemId).delete();
+
+    revalidatePath("/dashboard/tables");
+}
+
+export async function addMouvement(formData: FormData) {
 
     // await sleep(2000); // Simulate a delay for async operation
     await adminDb.collection("mouvement").add({
-        type: formData.get("type") as string,
-        name: formData.get("name") as string,
-        montant: Number(formData.get("montant")),
+        ...Object.fromEntries(formData.entries()),
+       /*  type: formData.get("type") as string,
+        name: formData.get("libelle") as string,
+        montant: Number(formData.get("montant")), */
         // Add other form fields as needed
         createdAt: Date.now(),
     });
     //console.log("form", formData)
+    revalidatePath("/dashboard/tables");
+    revalidatePath("/dashboard");
 }
 
 export async function handleSignout(formData: FormData) {
@@ -65,7 +72,9 @@ export async function addClient(values: {
 
 export async function updateClient(formData: FormData) {
 
-    const clientId = "dfsdfsjfhjshdhsdhj";
+    const clientId = formData.get("id") as string;
+
+   // console.log("Updating client:", clientId);
 
     const values = {
         name: formData.get("name") as string,
@@ -74,10 +83,10 @@ export async function updateClient(formData: FormData) {
         phone: formData.get("phone") as string,
         email: formData.get("email") as string,
     };
-    await adminDb.collection("clients").doc(clientId).update({
-        ...values,
-        updatedAt: Date.now(),
-    });
+      await adminDb.collection("clients").doc(clientId).update({
+       ...values,
+       updatedAt: Date.now(),
+     });
 
     revalidatePath("/dashboard/clients");
 }

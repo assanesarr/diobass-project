@@ -151,7 +151,7 @@ const data = {
     ],
 }
 
-export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: any }) {
+export function AppSidebar({ user, clients, ...props }: React.ComponentProps<typeof Sidebar> & { user: any, clients?: any[] }) {
 
     return (
         <Sidebar collapsible="offcanvas" {...props}>
@@ -171,7 +171,7 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
+                <NavMain items={data.navMain} clients={clients} />
                 {/* <NavDocuments items={data.documents} /> */}
                 <NavSecondary items={data.navSecondary} className="mt-auto" />
             </SidebarContent>

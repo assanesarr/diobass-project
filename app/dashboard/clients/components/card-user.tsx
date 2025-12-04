@@ -23,23 +23,21 @@ export default function CardUser({ user }: { user: User }) {
 
     const [editMode, setEditMode] = useState(false);
 
-
-
     return (
         <Card className="w-xs bg-white">
-            <form action={updateClient}>
-                {!editMode && <input type="hidden" name="id" value={user.id} />}
-                <CardHeader className="">
-                    <div className="flex gap-2 justify-end">
-                        {editMode ? (<Button variant="outline" type="submit"><Save /> Enregistre</Button>) : (<Button variant="secondary" onClick={() => setEditMode(true)}><IconPencil /></Button>)}
-                        {!editMode && <TrashComponent user={user} />}
-                    </div>
-                    <div className="photo-wrapper p-2">
-                        <img className="w-32 h-32 rounded-full mx-auto" src={user.avatar} alt="John Doe" />
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    {editMode ? <Input name="name" defaultValue={user.name} /> : (<h3 className="text-center text-xl text-gray-900 font-medium leading-8">{user.name}</h3>)}
+            <CardHeader className="">
+                <div className="flex gap-2 justify-end">
+                    {!editMode && (<Button variant="secondary" onClick={() => setEditMode(true)}><IconPencil /></Button>)}
+                    {!editMode && <TrashComponent user={user} />}
+                </div>
+                <div className="photo-wrapper p-2">
+                    <img className="w-32 h-32 rounded-full mx-auto" src={user.avatar} alt="John Doe" />
+                </div>
+            </CardHeader>
+            <CardContent>
+                <form action={updateClient}>
+                    {editMode && <input type="hidden" name="id" value={user.id} />}
+                    {editMode ? <Input name="name" defaultValue={user.name} /> : (<h3 className="text-center text-xl font-medium leading-8">{user.name}</h3>)}
                     <div className="text-center text-gray-400 text-xs font-semibold">
                         <p>{editMode ? <Input name="role" defaultValue={user.role} /> : user.role}</p>
                     </div>
@@ -60,10 +58,10 @@ export default function CardUser({ user }: { user: User }) {
                         </tbody>
                     </table>
                     <CardFooter className="flex justify-center my-3">
-                        <FooterUser user={user} />
+                        {editMode ? (<><Button variant="outline" ><Save /> Enregistre</Button> </>) : <FooterUser user={user} />}
                     </CardFooter>
-                </CardContent>
-            </form>
-        </Card>
+                </form>
+            </CardContent>
+        </Card >
     );
 }

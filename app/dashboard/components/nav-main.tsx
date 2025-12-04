@@ -15,12 +15,14 @@ import { DialogSaisis } from "@/components/saisis-form"
 
 export function NavMain({
   items,
+  clients
 }: {
   items: {
     title: string
     url: string
     icon?: Icon
-  }[]
+  }[],
+  clients?: any[]
 }) {
 
     const route = useRouter();
@@ -31,7 +33,7 @@ export function NavMain({
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             
-            <DialogSaisis />
+            <DialogSaisis clients={clients} />
             
           </SidebarMenuItem>
         </SidebarMenu>
