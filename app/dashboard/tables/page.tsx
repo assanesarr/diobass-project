@@ -24,15 +24,13 @@ export default async function TablesPage() {
     //     console.log("client", item);
     // });
 
-
-
     fetchData.sort((a, b) => b.createdAt - a.createdAt);
 
-    const mouvementData = fetchData
-        .map(m => ({
-            ...m,
-            montant: m.type === 'decaissement' ? -Math.abs(m.montant) : Math.abs(m.montant)
-        }))
+    // const mouvementData = fetchData
+    //     .map(m => ({
+    //         ...m,
+    //         montant: m.type === 'decaissement' ? -Math.abs(m.montant) : Math.abs(m.montant)
+    //     }))
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-2">

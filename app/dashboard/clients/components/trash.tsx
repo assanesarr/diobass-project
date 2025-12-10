@@ -32,7 +32,7 @@ compte et vos données de nos serveurs.
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => destr()} va>Continue</AlertDialogAction>
+                    <AlertDialogAction onClick={() => destr()} >Continue</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

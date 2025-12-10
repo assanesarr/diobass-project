@@ -3,8 +3,9 @@ import Credentials from "next-auth/providers/credentials"
 //import { saltAndHashPassword } from "@/utils/password"
 // import { cookies } from "next/headers";
 
+import { adminDb } from "@/lib/firebase-admin";
 
- 
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -17,13 +18,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (credentials) => {
         //let user = null
 
-        
- 
+
+
         // logic to salt and hash password
         const pwHash = credentials.password //saltAndHashPassword(credentials.password)
- 
+        const usersRef = adminDb.collection("users");
+
+        const q = usersRef.where("email", "==", credentials.email);
+        const snapshot = await q.get();
+        if (snapshot.empty) {
+          
+           throw new Error("Invalid ! credentials.");
+        }
+
+        if (pwHash !== snapshot.docs[0].data().password) {
+          throw new Error("Invalid !!! credentials.")
+        }
+
+        
+        const user = snapshot.docs[0].data();
+
+        // const data = await docRef.get();
         // logic to verify if the user exists
-        const user = {email: credentials.email as string, password: pwHash as string}; //await getUserFromDb(credentials.email, pwHash)
+        // const user = data.data();
+
+        console.log("User fetched from authorize:", user)
 
         if (!user) {
           // No user found, so this is their first attempt to login

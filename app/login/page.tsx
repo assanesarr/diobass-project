@@ -4,6 +4,7 @@ import { LoginForm } from "@/components/login-form"
 import { auth, signIn } from "@/auth";
 import { handleSubmit } from "@/lib/actions";
 import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 // await signIn("credentials", {
 //   identifier: values.username,
@@ -20,17 +21,20 @@ export default async function LoginPage() {
     redirect("/dashboard")
   }
 
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-    
+  const login = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  //   //Call signIn from next-auth
-  //   // await signIn("credentials", {
-  //   //   email,
-  //   //   password,
-  //   //   callbackUrl: "/dashboard",
-  //   // });
-  // }
+    handleSubmit(e.currentTarget as unknown as FormData).catch((error) => {
+      toast.error("Login failed. Please check your credentials and try again.");
+    })
+
+    //Call signIn from next-auth
+    // await signIn("credentials", {
+    //   email,
+    //   password,
+    //   callbackUrl: "/dashboard",
+    // });
+  }
   
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
@@ -45,7 +49,7 @@ export default async function LoginPage() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm action={handleSubmit} />
+            <LoginForm />
           </div>
         </div>
       </div>
