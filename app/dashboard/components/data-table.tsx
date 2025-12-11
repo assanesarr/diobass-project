@@ -110,15 +110,16 @@ import {
 
 import { deleteItem } from "@/lib/actions"
 import { cn } from "@/lib/utils"
-import { Divide } from "lucide-react"
 
 export const schema = z.object({
     id: z.number(),
-    header: z.string(),
+    name: z.string(),
+    compagnie: z.string(),
+    libelle: z.string(),
     type: z.string(),
     status: z.string(),
-    target: z.string(),
-    limit: z.string(),
+    montant: z.string(),
+    montant_total: z.string(),
     reviewer: z.string(),
 })
 
@@ -210,10 +211,10 @@ export function DataTable({
             header: "Status",
             cell: ({ row }) => (
                 <Badge variant="outline" className="text-muted-foreground px-1.5">
-                    {row.original.status === "Done" ? (
-                        <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
+                    {row.original?.montant_total === row.original.montant ? (
+                        <><IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" /> Done</>
                     ) : (
-                        <IconLoader />
+                        <><IconLoader /> En cours</>
                     )}
                     {row.original.status}
                 </Badge>
@@ -234,8 +235,9 @@ export function DataTable({
             header: () => <div className="text-center">Montant</div>,
             cell: ({ row }) => {
                 return (
-                    row.original.type === 'decaissement' ? -Math.abs(row.original.montant) : Math.abs(row.original.montant)
-
+                    row.original.type === 'decaissement' ?
+                        -Math.abs(Number(row.original.montant)) :
+                        Math.abs(Number(row.original.montant))
                 )
             },
         },
@@ -254,7 +256,7 @@ export function DataTable({
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-32">
-                        <DropdownMenuItem >Edit</DropdownMenuItem>
+                        <DropdownMenuItem className="">Edit</DropdownMenuItem>
                         {/* <DropdownMenuItem>Make a copy</DropdownMenuItem>
                         <DropdownMenuItem>Favorite</DropdownMenuItem> */}
                         <DropdownMenuSeparator />

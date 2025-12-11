@@ -55,9 +55,28 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                             <Label htmlFor="name-1">Libelle</Label>
                             <Input id="name-1" name="libelle" />
                         </div>
-                        <div className="grid gap-3">
-                            <Label htmlFor="montant-1">Montant</Label>
-                            <Input id="montant-1" name="montant" />
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="grid gap-3">
+                                <Label htmlFor="montant-1">Montant</Label>
+                                <Input id="montant-1" name="montant" />
+                            </div>
+                            <div className="flex flex-col gap-3">
+                                <Label htmlFor="limit">Type Paiement</Label>
+                                <Select name="payement_type">
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Select Payement Type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Type de paiement</SelectLabel>
+                                            <SelectItem value="OM">ORANGE MONEY</SelectItem>
+                                            <SelectItem value="WAVE">WAVE</SelectItem>
+                                            <SelectItem value="ESPECE">ESPECE</SelectItem>
+                                            <SelectItem value="CHEQUE">CHEQUE</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex flex-col gap-3">
@@ -74,6 +93,13 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                             <SelectItem value="MAESLINE">MAESLINE</SelectItem>
                                             <SelectItem value="SOCAPAO">SOCAPAO</SelectItem>
                                             <SelectItem value="ONE">ONE</SelectItem>
+                                            <SelectItem value="APPAG">APPAG</SelectItem>
+                                            <SelectItem value="ARKAS">ARKAS</SelectItem>
+                                            <SelectItem value="BOLUDA">BOLUDA</SelectItem>
+                                            <SelectItem value="DAKAR TERMINAL">DAKAR TERMINAL</SelectItem>
+                                            <SelectItem value="GRIMALDI">GRIMALDI</SelectItem>
+                                            <SelectItem value="CSTTAO">CSTTAO</SelectItem>
+                                            <SelectItem value="AGL">AGL</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
@@ -93,16 +119,16 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                                     ))
                                                 ) : (
                                                     <SelectItem value="none">No clients available</SelectItem>
-                                                )   
+                                                )
                                             }
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="flex flex-col gap-3">
-                                <Label htmlFor="limit">Limit</Label>
-                                <Input id="limit" name="limit" />
-                            </div>
+                        </div>
+                        <div className="grid gap-3">
+                            <Label htmlFor="montant-total">Montant Total</Label>
+                            <Input id="montant-total" name="montant_total" />
                         </div>
                     </div>
                     <DialogFooter>

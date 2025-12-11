@@ -65,9 +65,7 @@ export function SectionCards({ dataMouvements }: { dataMouvements?: { solde: num
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {dataMouvements?.totalDebit}
           </CardTitle>
-          
         </CardHeader>
-        
       </Card>
       <Card className="@container/card">
         <CardHeader>

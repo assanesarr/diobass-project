@@ -8,7 +8,7 @@ export default async function DashboardPage() {
 
   const mouvements = await adminDb.collection("mouvement").get().then((snapshot) => {
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  });
+  }) as {type: string, montant: string, createdAt: string}[];
 
   const decaissement = mouvements.filter(m => m.type === 'decaissement' && new Date(m.createdAt).getFullYear() === new Date().getFullYear());
   const totalDebit = decaissement.reduce((acc, m) => acc + Number(m.montant), 0);
@@ -20,12 +20,10 @@ export default async function DashboardPage() {
 
   const solde = totalCredit - totalDebit;
   const dataMouvements = { solde, totalDebit, totalCredit };
-  // const totalCredit = mouvements.reduce((acc, m) => acc + m.encaissement, 0);
-  // console.log("mouvements", totalEncaissement, totalDebit, solde);
   const mouvementData = mouvements
   .map(m => ({
     ...m,
-    montant: m.type === 'decaissement' ? -Math.abs(m.montant) : Math.abs(m.montant)
+    montant: m.type === 'decaissement' ? -Math.abs(Number(m.montant)) : Math.abs(Number(m.montant))
   }))
 
   return (

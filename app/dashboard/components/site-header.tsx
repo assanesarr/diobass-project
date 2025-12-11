@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { ModeToggle } from "@/app/dashboard/components/mode-toggle"
 // import { ThemeSelector } from "@/app/dashboard/components/theme-selector"
 
 export function SiteHeader() {
@@ -15,6 +13,11 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">Documents</h1>
       </div>
+      {/* <div>
+        <h1>
+          12000
+        </h1>
+      </div> */}
     </header>
   )
 }
