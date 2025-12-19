@@ -1,6 +1,5 @@
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-// import { ThemeSelector } from "@/app/dashboard/components/theme-selector"
 
 export function SiteHeader() {
   return (

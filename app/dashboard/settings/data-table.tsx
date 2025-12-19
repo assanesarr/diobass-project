@@ -23,10 +23,6 @@ export default function TableUsers(
             }>
         }) {
 
-    const destr = (userId: string) => {
-        deleteUser(userId);
-    }
-
 
     return (
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">

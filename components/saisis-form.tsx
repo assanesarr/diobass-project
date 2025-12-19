@@ -93,7 +93,7 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                             <SelectItem value="MAESLINE">MAESLINE</SelectItem>
                                             <SelectItem value="SOCAPAO">SOCAPAO</SelectItem>
                                             <SelectItem value="ONE">ONE</SelectItem>
-                                            <SelectItem value="APPAG">APPAG</SelectItem>
+                                            <SelectItem value="HAPAG">HAPAG</SelectItem>
                                             <SelectItem value="ARKAS">ARKAS</SelectItem>
                                             <SelectItem value="BOLUDA">BOLUDA</SelectItem>
                                             <SelectItem value="DAKAR TERMINAL">DAKAR TERMINAL</SelectItem>
@@ -126,10 +126,15 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                 </Select>
                             </div>
                         </div>
-                        <div className="grid gap-3">
-                            <Label htmlFor="montant-total">Montant Total</Label>
-                            <Input id="montant-total" name="montant_total" />
-                        </div>
+                        {
+                            type === "encaissement" && (
+                                <div className="grid gap-3">
+                                    <Label htmlFor="montant-total">Montant Total</Label>
+                                    <Input id="montant-total" name="montant_total" />
+                                </div>
+                            )
+                        }
+
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

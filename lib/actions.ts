@@ -5,6 +5,15 @@ import { adminDb } from "@/lib/firebase-admin";
 import { signIn, signOut } from "@/auth";
 import { revalidatePath } from "next/cache";
 
+export async function loadMouvement() {
+    const snap = await adminDb.collection("mouvement").get();
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+export async function loadClient() {
+    const snap = await adminDb.collection("clients").get();
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
 export async function handleSubmit(formData: FormData) {
 
     const email = formData.get('email')

@@ -9,7 +9,7 @@ import * as z from "zod"
 import { toast } from "sonner"
 import { addClient } from "@/lib/actions";
 import { useState } from "react";
-import { fa } from "zod/v4/locales";
+
 
 const formSchema = z.object({
     name: z
@@ -50,17 +50,16 @@ const forms = [
     {
         name: "phone",
         label: "Phone",
-        placeholder: "+977 9955221114",
+        placeholder: "+221 781535413",
     },
     {
         name: "email",
         label: "Email",
-        placeholder: "@gmail.com",
+        placeholder: "m@gmail.com",
     },
     {
         name: "avatar",
         label: "Photo URL",
-        
         placeholder: "https://www.gravatar.com/avatar/4acfb745ecf9d4dccb3364752d17f65f?s=260&d=mp",
     },
 ]
@@ -95,7 +94,7 @@ export default function AddBtn() {
             <DialogTrigger>
                 <Button variant="outline" size="sm">
                     <IconPlus />
-                    <span className="hidden lg:inline"> Ajouter</span>
+                    <span className="hidden lg:inline">Ajouter</span>
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -111,34 +110,147 @@ export default function AddBtn() {
                         }}
                     >
                         <FieldGroup>
-                            {
-                                forms.map((f) => (
-                                    <form.Field
-                                        name={f.name}
-                                        children={(field) => {
-                                            const isInvalid =
-                                                field.state.meta.isTouched && !field.state.meta.isValid
-                                            return (
-                                                <Field data-invalid={isInvalid}>
-                                                    <FieldLabel htmlFor={field.name}>{f.label}</FieldLabel>
-                                                    <Input
-                                                        id={field.name}
-                                                       // type={f?.type ? "file" : "text"}
-                                                        name={field.name}
-                                                        value={field.state.value}
-                                                        onBlur={field.handleBlur}
-                                                        onChange={(e) => field.handleChange(e.target.value)}
-                                                        aria-invalid={isInvalid}
-                                                        placeholder={f.placeholder}
-                                                    />
+                            
+                            <form.Field
+                                name="name"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched && !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) => field.handleChange(e.target.value)}
+                                                aria-invalid={isInvalid}
+                                                placeholder="John Doe"
+                                            />
 
-                                                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                                                </Field>
-                                            )
-                                        }}
-                                    />
-                                ))
-                            }
+                                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                                        </Field>
+                                    )
+                                }}
+                            />
+
+                            <form.Field
+                                name="role"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched && !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>Title</FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) => field.handleChange(e.target.value)}
+                                                aria-invalid={isInvalid}
+                                                placeholder="Web Developer"
+                                            />
+
+                                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                                        </Field>
+                                    )
+                                }}
+                            />
+                            <form.Field
+                                name="address"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched && !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>Adresse</FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) => field.handleChange(e.target.value)}
+                                                aria-invalid={isInvalid}
+                                                placeholder="Chatakpur-3, Dhangadhi Kailali"
+                                            />
+
+                                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                                        </Field>
+                                    )
+                                }}
+                            />
+                            <form.Field
+                                name="phone"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched && !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>Phone</FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) => field.handleChange(e.target.value)}
+                                                aria-invalid={isInvalid}
+                                                placeholder="+221 781535413"
+                                            />
+
+                                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                                        </Field>
+                                    )
+                                }}
+                            />
+                            <form.Field
+                                name="email"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched && !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) => field.handleChange(e.target.value)}
+                                                aria-invalid={isInvalid}
+                                                placeholder="m@gmail.com"
+                                            />
+
+                                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                                        </Field>
+                                    )
+                                }}
+                            />
+                            <form.Field
+                                name="avatar"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched && !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>Photo URL</FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) => field.handleChange(e.target.value)}
+                                                aria-invalid={isInvalid}
+                                                placeholder="https://www.gravatar.com/avatar/4acfb745ecf9d4dccb3364752d17f65f?s=260&d=mp"
+                                            />
+
+                                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                                        </Field>
+                                    )
+                                }}
+                            />
+
                         </FieldGroup>
                     </form>
                 </FieldSet>

@@ -51,8 +51,7 @@ import {
     useReactTable,
     VisibilityState,
 } from "@tanstack/react-table"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { toast } from "sonner"
+
 import { z } from "zod"
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -83,7 +82,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
     Select,
@@ -92,7 +90,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import {
     Table,
     TableBody,
@@ -104,15 +101,13 @@ import {
 import {
     Tabs,
     TabsContent,
-    TabsList,
-    TabsTrigger,
 } from "@/components/ui/tabs"
 
 import { deleteItem } from "@/lib/actions"
 import { cn } from "@/lib/utils"
 
 export const schema = z.object({
-    id: z.number(),
+    id: z.string(),
     name: z.string(),
     compagnie: z.string(),
     libelle: z.string(),
@@ -120,7 +115,8 @@ export const schema = z.object({
     status: z.string(),
     montant: z.string(),
     montant_total: z.string(),
-    reviewer: z.string(),
+    createdAt: z.number(),
+    clients: z.string(),
 })
 
 function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
@@ -546,7 +542,7 @@ function TableCellViewer({ allData, item, clients }:
     const isMobile = useIsMobile()
     const client = clients?.find(c => c.id === item.clients);
     const dt = allData?.filter(d => d.clients === item.clients)
-    console.log("dt", dt);
+    
     return (
         <Drawer direction={isMobile ? "bottom" : "right"}>
             <DrawerTrigger asChild>
@@ -601,7 +597,7 @@ function TableCellViewer({ allData, item, clients }:
                     <div className="flex flex-col gap-1">
                         <span className="font-medium">Montant</span>
                         <p className="text-muted-foreground">
-                            {item.type === 'decaissement' ? -Math.abs(item.montant) : Math.abs(item.montant)} FCFA
+                            {item.type === 'decaissement' ? -Math.abs(Number(item.montant)) : Math.abs(Number(item.montant))} FCFA
                         </p>
                     </div>
                 </div>

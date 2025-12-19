@@ -1,29 +1,32 @@
 import { adminDb } from "@/lib/firebase-admin";
 import { DataTable } from "../components/data-table";
 import data from "@/app/dashboard/data.json"
+import { loadClient, loadMouvement } from "@/lib/actions";
 
-async function loadMouvement() {
-    const snap = await adminDb.collection("mouvement").get();
-    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-}
-async function loadClient() {
-    const snap = await adminDb.collection("clients").get();
-    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-}
+
 
 export default async function TablesPage() {
 
 
 
-    const fetchData = await loadMouvement().then(data => data);
+    const fetchData = await loadMouvement().then(data => data) as {
+        id: string,
+        createdAt: number,
+        name: string,
+        type: string,
+        libelle: string,
+        compagnie: string,
+        montant: string,
+        clients: string,
+        montant_total: string,
+        status: string
+    }[];
+
     const clients = await loadClient().then(data => data);
 
-    // fetchData.map(item => {
 
-    //     item['client'] = client ? client : 'Unknown';
-    //     console.log("client", item);
-    // });
 
+    // Sort data by createdAt in descending order
     fetchData.sort((a, b) => b.createdAt - a.createdAt);
 
     // const mouvementData = fetchData
