@@ -20,21 +20,6 @@ export default async function LoginPage() {
   if(user){
     redirect("/dashboard")
   }
-
-  const login = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    handleSubmit(e.currentTarget as unknown as FormData).catch((error) => {
-      toast.error("Login failed. Please check your credentials and try again.");
-    })
-
-    //Call signIn from next-auth
-    // await signIn("credentials", {
-    //   email,
-    //   password,
-    //   callbackUrl: "/dashboard",
-    // });
-  }
   
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
@@ -44,7 +29,7 @@ export default async function LoginPage() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            Acme Inc.
+            KBT.
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
