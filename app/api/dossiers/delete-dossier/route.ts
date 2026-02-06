@@ -5,14 +5,14 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(req: Request) {
 //   try {
-//     const { dossierId } = await req.json();
+     const { dossierId } = await req.json();
 
-//     if (!dossierId) {
-//       return NextResponse.json(
-//         { message: "Missing params" },
-//         { status: 400 }
-//       );
-//     }
+    if (!dossierId) {
+      return NextResponse.json(
+        { message: "Missing params" },
+        { status: 400 }
+      );
+    }
 
 //    const res = await adminDb.collection("dossiers")
 //    .doc(dossierId)
