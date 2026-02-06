@@ -14,7 +14,7 @@ export async function DELETE(req: Request) {
         );
     }
 
-    const res = await adminDb.collection("dossiers")
+    await adminDb.collection("dossiers")
         .doc(dossierId)
         .delete()
 
