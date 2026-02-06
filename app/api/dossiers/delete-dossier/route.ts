@@ -34,7 +34,7 @@ export async function DELETE(req: Request) {
     //   .doc(versementId)
     //   .delete();
 
-    revalidatePath("/dashboard/clients")
+    // revalidatePath("/dashboard/clients")
 
     return NextResponse.json({ success: true });
   } catch (error) {
