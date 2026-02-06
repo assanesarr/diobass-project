@@ -1,5 +1,4 @@
 import { adminDb } from "@/lib/firebase-admin";
-import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 

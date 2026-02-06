@@ -46,7 +46,7 @@ export async function addMouvement(formData: FormData) {
 
     // await sleep(2000); // Simulate a delay for async operation
     await adminDb.collection("mouvement").add({
-        ...Object.fromEntries(formData.entries()),
+        ...formValues,
         /*  type: formData.get("type") as string,
          name: formData.get("libelle") as string,
          montant: Number(formData.get("montant")), */
@@ -58,10 +58,10 @@ export async function addMouvement(formData: FormData) {
     const clientId = formData.get("clients") as string;
     if (!clientId) return;
 
-    const dossierName = formData.get("dossier_name") as string;
+   
 
     if (formData.get("mode") === "NOUVEAU") {
-        
+
         const netPaye = formData.get("montant_total") as string
         if (!netPaye) return
         // const normalizedName = dossierName.trim().toLowerCase().replace(/\s+/g, '-');
@@ -69,13 +69,23 @@ export async function addMouvement(formData: FormData) {
             .where("clientId", "==", clientId)
 
         const resps = await dossierRef.get();
-        const normalizedName = clientId.concat(`-${resps.size + 1}`);
 
-        console.log("Number of existing dossiers for this client:", resps.size);
+        // const next = last + 1;
+        // const formatted = String(next).padStart(3, "0");
+        const ref = adminDb.collection("dossiers").doc();
+        const normalizedName = formData.get("dossier_name") as string;
 
-        await adminDb.collection("dossiers").add({
+        if (!normalizedName) return;
+
+
+        // const normalizedName = normalizedName.concat(`-${normalizedName + 1}`);
+
+        console.log("Number of existing dossiers for this client:", ref.id);
+        await ref.set({
+            id: ref.id,
             clientId: clientId,
             dossierName: normalizedName,
+            // dossierRef: id,
             montant_total: formData.get("montant_total") as string,
             status: formData.get("montant_total") === formData.get("montant") ? "paid" : "pending",
             versement: [
@@ -88,12 +98,27 @@ export async function addMouvement(formData: FormData) {
             mode: formData.get("mode") as string,
             createdAt: Date.now(),
         });
+        // await adminDb.collection("dossiers").add({
+        //     clientId: clientId,
+        //     dossierName: normalizedName,
+        //     montant_total: formData.get("montant_total") as string,
+        //     status: formData.get("montant_total") === formData.get("montant") ? "paid" : "pending",
+        //     versement: [
+        //         {
+        //             montant: formData.get("montant") as string,
+        //             method: formData.get("payment_method") as string,
+        //             date: Date.now(),
+        //         },
+        //     ],
+        //     mode: formData.get("mode") as string,
+        //     createdAt: Date.now(),
+        // });
     } else if (formData.get("mode") === "ACOMPTE") {
         console.log("Adding versement to existing dossier");
-
+        const dossierId = formData.get("dossier_name") as string;
         const dossierRef = adminDb.collection("dossiers")
             .where("clientId", "==", clientId)
-            .where("dossierName", "==", dossierName);
+            .where("id", "==", dossierId);
 
         const snapshot = await dossierRef.get();
         if (!snapshot.empty) {

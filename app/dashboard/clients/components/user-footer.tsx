@@ -56,7 +56,7 @@ export default function FooterUser({ user, docs }: { user: any, docs: any[] }) {
                                             <div className="flex gap-1 justify-between">
                                                 <TrashDossier dossierId={dossier.id} setDossiers={setDossiers} />
                                                 <AccordionTrigger>
-                                                    <Badge>Dossier {dossier.dossierName.split("-")[1]}</Badge>
+                                                    <Badge>Dossier {dossier.dossierName}</Badge>
                                                 </AccordionTrigger>
                                             </div>
                                             <AccordionContent>

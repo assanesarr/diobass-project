@@ -166,12 +166,10 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                     </SelectContent>
                                 </Select>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-
                             {
                                 modeEncaissement === "ACOMPTE" && type === "encaissement" && (
                                     <div className="flex flex-col gap-3">
+
                                         <Label htmlFor="">Dossiers</Label>
                                         <Select name="dossier_name" >
                                             <SelectTrigger className="w-[180px]">
@@ -181,13 +179,21 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                                 <SelectGroup>
                                                     {dossiers.map((dossier) => (
                                                         <SelectItem
-                                                            key={dossier.dossierName}
-                                                            value={dossier.dossierName}
+                                                            key={dossier.id}
+                                                            value={dossier.id}
                                                         >{dossier.dossierName}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
+                                    </div>
+                                )
+                            }
+                            {
+                                modeEncaissement === "NOUVEAU" && type === "encaissement" && (
+                                    <div className="flex flex-col gap-3">
+                                        <Label >Dossier name</Label>
+                                        <Input name="dossier_name"  />
                                     </div>
                                 )
                             }
