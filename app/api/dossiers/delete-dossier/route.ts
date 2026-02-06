@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 
 export async function DELETE(req: Request) {
-    //   try {
+       try {
     const { dossierId } = await req.json();
 
     if (!dossierId) {
@@ -14,9 +14,10 @@ export async function DELETE(req: Request) {
         );
     }
 
-    await adminDb.collection("dossiers")
-        .doc(dossierId)
-        .delete()
+    // ignore-listed
+    // await adminDb.collection("dossiers")
+    //     .doc(dossierId)
+    //     .delete()
 
     // console.log('Received data:', res.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
@@ -30,13 +31,13 @@ export async function DELETE(req: Request) {
 
     // revalidatePath("/dashboard/clients")
 
-    //     return NextResponse.json({ success: true });
-    //   } catch (error) {
-    //     console.error(error);
+        return NextResponse.json({ success: true });
+      } catch (error) {
+        console.error(error);
 
-    //     return NextResponse.json(
-    //       { message: "Server error" },
-    //       { status: 500 }
-    //     );
-    //   }
+        return NextResponse.json(
+          { message: "Server error" },
+          { status: 500 }
+        );
+      }
 }
