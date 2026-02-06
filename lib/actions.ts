@@ -9,6 +9,7 @@ export async function loadMouvement() {
     const snap = await adminDb.collection("mouvement").get();
     return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
+
 export async function loadClient() {
     const snap = await adminDb.collection("clients").get();
     return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -40,6 +41,9 @@ export async function deleteItem(formData: FormData) {
 
 export async function addMouvement(formData: FormData) {
 
+    const formValues = { ...Object.fromEntries(formData.entries()) };
+    if (!formValues.montant) return;
+
     // await sleep(2000); // Simulate a delay for async operation
     await adminDb.collection("mouvement").add({
         ...Object.fromEntries(formData.entries()),
@@ -49,8 +53,73 @@ export async function addMouvement(formData: FormData) {
         // Add other form fields as needed
         createdAt: Date.now(),
     });
+
+
+    const clientId = formData.get("clients") as string;
+    if (!clientId) return;
+
+    const dossierName = formData.get("dossier_name") as string;
+
+    if (formData.get("mode") === "NOUVEAU") {
+        
+        const netPaye = formData.get("montant_total") as string
+        if (!netPaye) return
+        // const normalizedName = dossierName.trim().toLowerCase().replace(/\s+/g, '-');
+        const dossierRef = adminDb.collection("dossiers")
+            .where("clientId", "==", clientId)
+
+        const resps = await dossierRef.get();
+        const normalizedName = clientId.concat(`-${resps.size + 1}`);
+
+        console.log("Number of existing dossiers for this client:", resps.size);
+
+        await adminDb.collection("dossiers").add({
+            clientId: clientId,
+            dossierName: normalizedName,
+            montant_total: formData.get("montant_total") as string,
+            status: formData.get("montant_total") === formData.get("montant") ? "paid" : "pending",
+            versement: [
+                {
+                    montant: formData.get("montant") as string,
+                    method: formData.get("payment_method") as string,
+                    date: Date.now(),
+                },
+            ],
+            mode: formData.get("mode") as string,
+            createdAt: Date.now(),
+        });
+    } else if (formData.get("mode") === "ACOMPTE") {
+        console.log("Adding versement to existing dossier");
+
+        const dossierRef = adminDb.collection("dossiers")
+            .where("clientId", "==", clientId)
+            .where("dossierName", "==", dossierName);
+
+        const snapshot = await dossierRef.get();
+        if (!snapshot.empty) {
+            const dossierDoc = snapshot.docs[0];
+            const versement = dossierDoc.data().versement || [];
+            versement.push({
+                montant: formData.get("montant") as string,
+                method: formData.get("payment_method") as string,
+                date: Date.now(),
+            });
+            await adminDb.collection("dossiers").doc(dossierDoc.id).update({
+                versement: versement,
+                updatedAt: Date.now(),
+            });
+        }
+    }
+
+
+    // await adminDb.collection("dossier").doc(clientId).update({
+    //     montant_total: formData.get("montant_total") as string,
+    //     updatedAt: Date.now(),
+    // });
+
     //console.log("form", formData)
     revalidatePath("/dashboard/tables");
+    revalidatePath("/dashboard/clients");
     revalidatePath("/dashboard");
 }
 

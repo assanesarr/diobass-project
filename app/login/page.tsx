@@ -29,7 +29,7 @@ export default async function LoginPage() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            KBT.
+            Darou Khafor Transit
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">

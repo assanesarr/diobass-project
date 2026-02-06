@@ -29,12 +29,12 @@ export function LoginForm({
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Login to your account</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
+            Enter your email or phone below to login to your account
           </p>
         </div>
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" name="email" type="text" placeholder="m@example.com" required />
+          <FieldLabel htmlFor="email">Email or phone</FieldLabel>
+          <Input id="email" name="email" type="text" placeholder="m@example.com or 123-456-7890" required />
         </Field>
         <Field>
           <div className="flex items-center">

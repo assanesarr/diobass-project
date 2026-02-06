@@ -147,7 +147,7 @@ export function ChartAreaInteractive({mouvement}: {mouvement: any[]}) {
   const chartData = mouvement.map(m => ({
         encaissement: m.type === 'encaissement' ? m.montant : 0,
         decaissement: m.type === 'decaissement' ? m.montant : 0,
-        date: new Date(m.createdAt).toLocaleDateString('en-CA'),
+        date: new Date(m.createdAt).toLocaleDateString('en-US'),
     }));
 
   React.useEffect(() => {
@@ -158,7 +158,7 @@ export function ChartAreaInteractive({mouvement}: {mouvement: any[]}) {
 
   const filteredData = chartData.filter((item) => {
     const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
+    const referenceDate = new Date()
     let daysToSubtract = 90
     if (timeRange === "30d") {
       daysToSubtract = 30

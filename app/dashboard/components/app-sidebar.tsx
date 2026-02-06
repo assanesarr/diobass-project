@@ -47,7 +47,12 @@ const data = {
             icon: IconDashboard,
         },
         {
-            title: "Tables",
+            title: "Suivi Clients",
+            url: "/dashboard/clients",
+            icon: IconUsers,
+        },
+        {
+            title: "Comptabilité",
             url: "/dashboard/tables",
             icon: IconListDetails,
         },
@@ -61,11 +66,7 @@ const data = {
         //   url: "#",
         //   icon: IconFolder,
         // },
-        {
-            title: "Clients",
-            url: "/dashboard/clients",
-            icon: IconUsers,
-        },
+        
     ],
     navClouds: [
         {
@@ -164,7 +165,7 @@ export function AppSidebar({ user, clients, ...props }: React.ComponentProps<typ
                         >
                             <Link href="#">
                                 <IconInnerShadowTop className="!size-5" />
-                                <span className="text-base font-semibold">KB</span>
+                                <span className="text-base font-semibold">DKT</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

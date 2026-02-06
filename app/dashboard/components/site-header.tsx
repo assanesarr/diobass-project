@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 
@@ -12,11 +13,16 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">Documents</h1>
       </div>
-      {/* <div>
-        <h1>
-          12000
-        </h1>
-      </div> */}
+      <div className="ml-auto flex w-full max-w-sm items-center justify-end gap-4 px-4 lg:px-6">
+        <Badge className="hidden text-base font-medium lg:inline-flex">
+          {new Date().toLocaleDateString("fr-FR", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </Badge>
+      </div> 
     </header>
   )
 }

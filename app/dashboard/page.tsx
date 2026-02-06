@@ -1,5 +1,4 @@
 import { ChartAreaInteractive } from "@/app/dashboard/components/chart-area-interactive"
-import { DataTable } from "@/app/dashboard/components/data-table"
 import { SectionCards } from "@/app/dashboard/components/section-cards"
 import { adminDb } from "@/lib/firebase-admin"
 import DashboardItems from "./components/dashboard-items"
@@ -10,7 +9,7 @@ export default async function DashboardPage() {
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }) as {type: string, montant: string, createdAt: string}[];
 
-  const decaissement = mouvements.filter(m => m.type === 'decaissement' && new Date(m.createdAt).getFullYear() === new Date().getFullYear());
+  const decaissement = mouvements.filter(m => m.type === 'decaissement' /* && new Date(m.createdAt).getFullYear() === new Date().getFullYear()*/);
   const totalDebit = decaissement.reduce((acc, m) => acc + Number(m.montant), 0);
 
 

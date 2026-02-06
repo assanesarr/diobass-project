@@ -253,8 +253,6 @@ export function DataTable({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-32">
                         <DropdownMenuItem className="">Edit</DropdownMenuItem>
-                        {/* <DropdownMenuItem>Make a copy</DropdownMenuItem>
-                        <DropdownMenuItem>Favorite</DropdownMenuItem> */}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem variant="destructive" asChild>
                             <form action={deleteItem}>
@@ -308,11 +306,11 @@ export function DataTable({
     }, [initialData])
 
 
-    const decaissement = initialData.filter(m => m.type === 'decaissement' && new Date(m.createdAt).getFullYear() === new Date().getFullYear());
+    const decaissement = initialData.filter(m => m.type === 'decaissement' /* && new Date(m.createdAt).getFullYear() === new Date().getFullYear()*/);
     const totalDebit = decaissement.reduce((acc, m) => acc + Number(m.montant), 0);
 
 
-    const encaissement = initialData.filter(m => m.type === 'encaissement' && new Date(m.createdAt).getFullYear() === new Date().getFullYear());
+    const encaissement = initialData.filter(m => m.type === 'encaissement' /* && new Date(m.createdAt).getFullYear() === new Date().getFullYear()*/);
     const totalCredit = encaissement.reduce((acc, m) => acc + Number(m.montant), 0);
 
 
@@ -542,7 +540,13 @@ function TableCellViewer({ allData, item, clients }:
     const isMobile = useIsMobile()
     const client = clients?.find(c => c.id === item.clients);
     const dt = allData?.filter(d => d.clients === item.clients)
+
+    const total = dt?.reduce((acc, d) => acc + (d.type === 'decaissement' ? -Math.abs(d.montant) : Math.abs(d.montant)), 0) || 0
+    const somme = dt?.find(d => d.mode === 'NOUVEAU')?.montant_total
     
+    const rest = somme - total
+
+
     return (
         <Drawer direction={isMobile ? "bottom" : "right"}>
             <DrawerTrigger asChild>
@@ -562,17 +566,33 @@ function TableCellViewer({ allData, item, clients }:
                     {
                         dt && dt.length > 0 ? (
                             <div className="flex flex-col gap-1">
-                                <span className="font-medium">Total Operations</span>
-                                <p className="text-muted-foreground">{dt.length}</p>
+                                <div className="flex justify-between mb-2">
+                                    <span className="font-medium">Total Operations</span>
+                                    <Badge >{dt.length}</Badge>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    {
+                                        dt.map((d, index) => (
+                                            <div key={index} className="flex justify-between">
+                                                <span className="text-muted-foreground">{new Date(d.createdAt).toLocaleDateString("fr-FR")}</span>
+                                                <span className="text-muted-foreground">{d.type === 'decaissement' ? -Math.abs(d.montant) : Math.abs(d.montant)} FCFA</span>
+                                            </div>
+                                        ))
+                                    }
+                                    <div className="flex flex-col  mt-4 border-t">
+                                        <div className="flex justify-end ">
+                                            <div className="flex flex-col text-right">
+                                                <span>Mont: {dt.find(d => d.mode === 'NOUVEAU')?.montant_total || 0} </span>
 
-                                {
-                                    dt.map((d, index) => (
-                                        <div key={index} className="flex justify-between">
-                                            <span className="text-muted-foreground">{new Date(d.createdAt).toLocaleDateString("fr-FR")}</span>
-                                            <span className="text-muted-foreground">{d.type === 'decaissement' ? -Math.abs(d.montant) : Math.abs(d.montant)} FCFA</span>
+                                                <span>Acompte: {total}</span>
+                                            </div>
                                         </div>
-                                    ))
-                                }
+                                        <div className="flex justify-end mt-2">
+                                            <span>Rest: </span> <Badge className={cn("rounded-none", rest <= 0 ? "bg-green-600" : "bg-red-600")}>{rest} FCFA</Badge>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
                         ) : (
                             <div className="flex flex-col gap-1">
@@ -581,25 +601,15 @@ function TableCellViewer({ allData, item, clients }:
                             </div>
                         )
                     }
-                    {item.libelle && (
+                    {/* {item.libelle && (
                         <div className="flex flex-col gap-1">
 
                             <span className="font-medium">Description</span>
                             <p className="text-muted-foreground">{item.libelle}</p>
                         </div>
-                    )}
-                    <div className="flex flex-col gap-1">
-                        <span className="font-medium">Type Operation</span>
-                        <p className="text-muted-foreground">
-                            {item.type === 'decaissement' ? 'Decaissement' : 'Encaissement'}
-                        </p>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <span className="font-medium">Montant</span>
-                        <p className="text-muted-foreground">
-                            {item.type === 'decaissement' ? -Math.abs(Number(item.montant)) : Math.abs(Number(item.montant))} FCFA
-                        </p>
-                    </div>
+                    )} */}
+
+
                 </div>
                 <DrawerFooter>
 
