@@ -15,9 +15,9 @@ export async function DELETE(req: Request) {
     }
 
     // ignore-listed
-    // await adminDb.collection("dossiers")
-    //     .doc(dossierId)
-    //     .delete()
+    await adminDb.collection("dossiers")
+        .doc(dossierId)
+        .delete()
 
     // console.log('Received data:', res.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 

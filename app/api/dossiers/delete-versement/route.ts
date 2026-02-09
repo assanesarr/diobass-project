@@ -13,27 +13,27 @@ export async function DELETE(req: Request) {
     }
 
 
-//    const res = await adminDb.collection("dossiers")
-//     .where("dossierName", "==", dossierName).get();
+   const res = await adminDb.collection("dossiers")
+    .where("dossierName", "==", dossierName).get();
 
-//     if (res.empty) {
-//       return NextResponse.json(
-//         { message: "Dossier not found" },
-//         { status: 404 }
-//       );
-//     }
+    if (res.empty) {
+      return NextResponse.json(
+        { message: "Dossier not found" },
+        { status: 404 }
+      );
+    }
 
-//     res.docs.map(doc => ({id: doc.id, ...doc.data()}))    
-//     .forEach(async (dossier: any) => {
-//         const updatedVersements = (dossier.versement || []).filter((v: any) => v.date !== versementDate);
-//         await adminDb.collection("dossiers")
-//         .doc(dossier.id)
-//         .update({
-//             versement: updatedVersements
-//         });
-//     });
+    res.docs.map(doc => ({id: doc.id, ...doc.data()}))    
+    .forEach(async (dossier: any) => {
+        const updatedVersements = (dossier.versement || []).filter((v: any) => v.date !== versementDate);
+        await adminDb.collection("dossiers")
+        .doc(dossier.id)
+        .update({
+            versement: updatedVersements
+        });
+    });
 
-//     console.log('Received data:', res.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    console.log('Received data:', res.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
     // await admin
    
