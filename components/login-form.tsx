@@ -9,6 +9,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { handleSubmit } from "@/lib/actions"
 import { toast } from "sonner";
+import InstallButton from "./install-button"
+
+
 
 const login = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -30,6 +33,7 @@ export function LoginForm({
           <h1 className="text-2xl font-bold">Login to your account</h1>
           <p className="text-muted-foreground text-sm text-balance">
             Enter your email or phone below to login to your account
+            <InstallButton />
           </p>
         </div>
         <Field>
