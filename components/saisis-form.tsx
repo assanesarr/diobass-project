@@ -14,16 +14,33 @@ import { Label } from "@/components/ui/label"
 import { SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar"
 import { IconCirclePlusFilled } from "@tabler/icons-react"
 import { addMouvement } from "@/lib/actions"
-import { Spinner } from "./ui/spinner"
 import React, { useEffect } from "react"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select"
-import { Checkbox } from "./ui/checkbox"
-import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "./ui/field"
-import { Switch } from "./ui/switch"
+
+const payements = [
+    "Debarquement",
+    "Tax Port + Relevage",
+    "Escorte Douane + Retour Douanier",
+    "Circuit",
+    "Depotage",
+    "Surestarie",
+    "Transport",
+    "Assurance",
+    "Vacation Douane",
+    "Gainde",
+    "Container N",
+    "TS Douane",
+    "Visite Douane",
+    "Fret",
+    "TRansfert LTA",
+    "Magasinage",
+    "Location Fourchette"
+]
 
 export function DialogSaisis({ clients }: { clients?: any[] }) {
     const [type, setType] = React.useState<"encaissement" | "decaissement">("encaissement");
     const [modeEncaissement, setModeEncaissement] = React.useState<string>("NOUVEAU");
+    const [methodPayement, setMethodPayement] = React.useState<string>("")
     const [clientId, setClientId] = React.useState<string>("");
     const [dossiers, setDossiers] = React.useState<any[]>([]);
 
@@ -130,7 +147,26 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                         </div>
                                     </>
 
-                                ) : null
+                                ) : (
+                                    <div className="flex flex-col gap-3">
+                                        <Label htmlFor="Payement">Payement</Label>
+                                        <Select name="payement" >
+                                            <SelectTrigger className="w-[180px]">
+                                                <SelectValue placeholder="Select a mode" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>decaissement</SelectLabel>
+                                                    {
+                                                        payements.map((p, index) => (
+                                                            <SelectItem  key={index} value={p} >{p}</SelectItem>
+                                                        ))
+                                                    }
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )
                             }
 
                             <div className="grid gap-3">
@@ -151,14 +187,14 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                             </div> */}
                             <div className="flex flex-col gap-3">
                                 <Label htmlFor="limit">Method Paiement</Label>
-                                <Select name="payment_method" >
+                                <Select name="payment_method" onValueChange={setMethodPayement}>
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select Payement Type" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>Type de paiement</SelectLabel>
-                                            <SelectItem value="OM">ORANGE MONEY</SelectItem>
+                                            <SelectLabel>Method de paiement</SelectLabel>
+                                            <SelectItem value="ORANGE MONEY">ORANGE MONEY</SelectItem>
                                             <SelectItem value="WAVE">WAVE</SelectItem>
                                             <SelectItem value="ESPECE">ESPECE</SelectItem>
                                             <SelectItem value="CHEQUE">CHEQUE</SelectItem>
@@ -193,7 +229,7 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                 modeEncaissement === "NOUVEAU" && type === "encaissement" && (
                                     <div className="flex flex-col gap-3">
                                         <Label >Dossier name</Label>
-                                        <Input name="dossier_name"  />
+                                        <Input name="dossier_name" />
                                     </div>
                                 )
                             }
@@ -228,6 +264,14 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                 )
                             }
                         </div>
+                        {
+                            type === "encaissement" && methodPayement === "CHEQUE" && (
+                                <div className="flex flex-col gap-3">
+                                    <Label >Numero Cheque</Label>
+                                    <Input name="numero_cheque" />
+                                </div>
+                            )
+                        }
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>

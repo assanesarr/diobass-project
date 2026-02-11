@@ -184,17 +184,17 @@ export function DataTable({
             },
             enableHiding: false,
         },
-        {
-            accessorKey: "compagnies",
-            header: "Compagnies",
-            cell: ({ row }) => (
-                <div className="w-32">
-                    <Badge variant="outline" className="text-muted-foreground px-1.5">
-                        {row.original.compagnie}
-                    </Badge>
-                </div>
-            ),
-        },
+        // {
+        //     accessorKey: "compagnies",
+        //     header: "Compagnies",
+        //     cell: ({ row }) => (
+        //         <div className="w-32">
+        //             <Badge variant="outline" className="text-muted-foreground px-1.5">
+        //                 {row.original.compagnie}
+        //             </Badge>
+        //         </div>
+        //     ),
+        // },
         {
             accessorKey: "libelle",
             header: () => <div className="w-full text-center">Description</div>,
@@ -202,21 +202,21 @@ export function DataTable({
                 <div className="w-64 text-center">{row.original.libelle}</div>
             ),
         },
-        {
-            accessorKey: "status",
-            header: "Status",
-            cell: ({ row }) => (
-                <Badge variant="outline" className="text-muted-foreground px-1.5">
-                    {row.original?.montant_total === row.original.montant ? (
-                        <><IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" /> Done</>
-                    ) : (
-                        <><IconLoader /> En cours</>
-                    )}
-                    {row.original.status}
-                </Badge>
-            ),
+        // {
+        //     accessorKey: "status",
+        //     header: "Status",
+        //     cell: ({ row }) => (
+        //         <Badge variant="outline" className="text-muted-foreground px-1.5">
+        //             {row.original?.montant_total === row.original.montant ? (
+        //                 <><IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" /> Done</>
+        //             ) : (
+        //                 <><IconLoader /> En cours</>
+        //             )}
+        //             {row.original.status}
+        //         </Badge>
+        //     ),
 
-        },
+        // },
         {
             accessorKey: "type",
             header: () => <div className="text-center">Type Operation</div>,

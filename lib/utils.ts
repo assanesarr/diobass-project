@@ -30,8 +30,8 @@ export function truncateText(text: string, maxLength: number): string {
 }
 
 export function capitalizeFirstLetter(text: string): string {
-  if (text.length === 0) return text
-  return text.charAt(0).toUpperCase() + text.slice(1)
+  if (text?.length === 0) return text
+  return text?.charAt(0).toUpperCase() + text?.slice(1)
 }
 
 export function sleep(ms: number): Promise<void> {
