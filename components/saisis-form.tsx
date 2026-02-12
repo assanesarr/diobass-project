@@ -16,6 +16,11 @@ import { IconCirclePlusFilled } from "@tabler/icons-react"
 import { addMouvement } from "@/lib/actions"
 import React, { useEffect } from "react"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select"
+import { toast } from "sonner"
+import { useFormState, useFormStatus } from "react-dom"
+import { SubmitButton } from "./submit-btn"
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
+import { AlertCircleIcon } from "lucide-react"
 
 const payements = [
     "Debarquement",
@@ -37,12 +42,25 @@ const payements = [
     "Location Fourchette"
 ]
 
+const initialState = { error: null }
+
 export function DialogSaisis({ clients }: { clients?: any[] }) {
     const [type, setType] = React.useState<"encaissement" | "decaissement">("encaissement");
     const [modeEncaissement, setModeEncaissement] = React.useState<string>("NOUVEAU");
     const [methodPayement, setMethodPayement] = React.useState<string>("")
     const [clientId, setClientId] = React.useState<string>("");
     const [dossiers, setDossiers] = React.useState<any[]>([]);
+    // const { pending } = useFormStatus()
+    const [state, formAction] = useFormState(addMouvement, null)
+
+    // const handleActionSubmit = async (formData: FormData) => {
+    //     const result = await addMouvement(formData)
+
+    //     if (!result?.success) {
+    //          setError(result?.message)
+    //         toast.error(result?.message)
+    //     }
+    // }
 
 
     useEffect(() => {
@@ -63,10 +81,21 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                 console.error("Error fetching API:", error);
             });
         console.log("Selected Client ID:", clientId);
+
     }, [clientId]);
 
+    useEffect(() => {
+        console.log("Form State Updated:", state);
+        if (state?.error) {
+            toast.error(state.error);
+        } else if (state?.success) {
+            toast.success("Mouvement added successfully!");
+        }
+    }, [state]);
+
+
     return (
-        <Dialog>
+        <Dialog onOpenChange={(test) => { }}>
             <DialogTrigger asChild>
                 <SidebarMenuItem className="flex items-center gap-2">
                     <SidebarMenuButton
@@ -88,7 +117,16 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                 </SidebarMenuItem>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
-                <form action={addMouvement} className="grid gap-4">
+                {state?.error && (
+                    <Alert variant="destructive" className="max-w-md">
+                        <AlertCircleIcon />
+                        <AlertTitle>Enregistrement failed</AlertTitle>
+                        <AlertDescription>
+                            {state?.error}
+                        </AlertDescription>
+                    </Alert>
+                )}
+                <form action={formAction} className="grid gap-4">
                     <input type="hidden" name="type" value={type} />
                     <DialogHeader>
                         <DialogTitle className={type === "decaissement" ? "text-red-600" : "text-green-600"}>Operation {type} </DialogTitle>
@@ -100,54 +138,80 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
-                            {
-                                type === "encaissement" ? (
-                                    <>
-                                        <div className="flex flex-col gap-3">
-                                            <Label htmlFor="Clients">Clients</Label>
-                                            <Select name="clients" onValueChange={setClientId}>
-                                                <SelectTrigger className="w-[180px]">
-                                                    <SelectValue placeholder="Select a clients" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        {
-                                                            clients && clients.length > 0 ? (
-                                                                clients.map((client) => (
-                                                                    <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
-                                                                ))
-                                                            ) : (
-                                                                <SelectItem value="none">No clients available</SelectItem>
-                                                            )
-                                                        }
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="flex flex-col gap-3">
-                                            <Label htmlFor="mode">Mode encaissement</Label>
+                            <div className="flex flex-col gap-3">
+                                <Label htmlFor="Clients">Clients</Label>
+                                <Select name="clients" onValueChange={setClientId}>
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Select a clients" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
                                             {
-                                                dossiers.length === 0 ? (
-                                                    <Input id="mode" name="mode" value="NOUVEAU" readOnly />
-                                                ) : (
-                                                    <Select name="mode" onValueChange={setModeEncaissement} defaultValue={modeEncaissement}>
-                                                        <SelectTrigger className="w-[180px]">
-                                                            <SelectValue placeholder="Select a mode" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectGroup>
-                                                                <SelectLabel>Mode encaissement</SelectLabel>
-                                                                <SelectItem value="NOUVEAU">NOUVEAU</SelectItem>
-                                                                <SelectItem value="ACOMPTE">ACOMPTE</SelectItem>
-                                                            </SelectGroup>
-                                                        </SelectContent>
-                                                    </Select>
+                                                clients && clients.length > 0 ? (<>
+                                                    {
+                                                        clients.map((client) => (
+                                                            <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
+                                                        ))
+                                                    }
+                                                    {
+                                                        type === "decaissement" && <SelectItem value="OTHER">Autre</SelectItem>
+                                                    }
+                                                </>) : (
+                                                    <SelectItem value="none">No clients available</SelectItem>
                                                 )
                                             }
-                                        </div>
-                                    </>
+                                            <Button variant="outline" size="sm" className="w-full" >Ajouter un nouveau client</Button>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            {
+                                type === "encaissement" ? (
+                                    <div className="flex flex-col gap-3">
+                                        <Label htmlFor="mode">Mode encaissement</Label>
+                                        {
+                                            dossiers.length === 0 ? (
+                                                <Input id="mode" name="mode" value="NOUVEAU" readOnly />
+                                            ) : (
+                                                <Select name="mode" onValueChange={setModeEncaissement} defaultValue={modeEncaissement}>
+                                                    <SelectTrigger className="w-[180px]">
+                                                        <SelectValue placeholder="Select a mode" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectLabel>Mode encaissement</SelectLabel>
+                                                            <SelectItem value="NOUVEAU">NOUVEAU</SelectItem>
+                                                            <SelectItem value="ACOMPTE">ACOMPTE</SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                            )
+                                        }
+                                    </div>
 
-                                ) : (
+                                ) : (<>
+                                    {
+                                        type === "decaissement" && clientId !== "OTHER" && (
+                                            <div className="flex flex-col gap-3">
+                                                <Label htmlFor="">Dossiers</Label>
+                                                <Select name="dossier_name" >
+                                                    <SelectTrigger className="w-[180px]">
+                                                        <SelectValue placeholder="Dossiers" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            {dossiers.map((dossier) => (
+                                                                <SelectItem
+                                                                    key={dossier.id}
+                                                                    value={dossier.id}
+                                                                >{dossier.dossierName}</SelectItem>
+                                                            ))}
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        )
+                                    }
                                     <div className="flex flex-col gap-3">
                                         <Label htmlFor="Payement">Payement</Label>
                                         <Select name="payement" >
@@ -158,15 +222,20 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                                 <SelectGroup>
                                                     <SelectLabel>decaissement</SelectLabel>
                                                     {
-                                                        payements.map((p, index) => (
-                                                            <SelectItem  key={index} value={p} >{p}</SelectItem>
-                                                        ))
+                                                        clientId === "OTHER" ?
+                                                            <>
+                                                                <SelectItem value="TRANSPORT" >Transport</SelectItem>
+                                                                <SelectItem value="REPAS" >Repas</SelectItem>
+                                                            </>
+                                                            : payements.map((p, index) => (
+                                                                <SelectItem key={index} value={p} >{p}</SelectItem>
+                                                            ))
                                                     }
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                )
+                                </>)
                             }
 
                             <div className="grid gap-3">
@@ -181,10 +250,7 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                     </div>
                                 )
                             }
-                            {/* <div className="flex flex-col gap-3">
-                                <Label htmlFor="montant-total">Montant Total</Label>
-                                <Input id="montant-total" name="montant_total" />
-                            </div> */}
+
                             <div className="flex flex-col gap-3">
                                 <Label htmlFor="limit">Method Paiement</Label>
                                 <Select name="payment_method" onValueChange={setMethodPayement}>
@@ -205,7 +271,6 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                             {
                                 modeEncaissement === "ACOMPTE" && type === "encaissement" && (
                                     <div className="flex flex-col gap-3">
-
                                         <Label htmlFor="">Dossiers</Label>
                                         <Select name="dossier_name" >
                                             <SelectTrigger className="w-[180px]">
@@ -233,7 +298,7 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                     </div>
                                 )
                             }
-                            {
+                            {/* {
                                 type === "decaissement" && (
                                     <div className="flex flex-col gap-3">
                                         <Label htmlFor="limit">Compagnie</Label>
@@ -262,7 +327,7 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                                         </Select>
                                     </div>
                                 )
-                            }
+                            } */}
                         </div>
                         {
                             type === "encaissement" && methodPayement === "CHEQUE" && (
@@ -275,9 +340,9 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
+                            <Button variant="outline">Annuler</Button>
                         </DialogClose>
-                        <Button type="submit" > Save changes</Button>
+                        <SubmitButton />
                     </DialogFooter>
                 </form>
             </DialogContent>

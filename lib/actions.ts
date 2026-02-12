@@ -39,113 +39,157 @@ export async function deleteItem(formData: FormData) {
     revalidatePath("/dashboard/tables");
 }
 
-export async function addMouvement(formData: FormData) {
+export type FormState = {
+    success: boolean
+    message: string
+    error: string | null
+}
 
-    const formValues = { ...Object.fromEntries(formData.entries()) };
-    if (!formValues.montant) return;
+export async function addMouvement(prevState: FormState | null, formData: FormData): Promise<FormState> {
 
-    // await sleep(2000); // Simulate a delay for async operation
-    await adminDb.collection("mouvement").add({
-        ...formValues,
-        /*  type: formData.get("type") as string,
-         name: formData.get("libelle") as string,
-         montant: Number(formData.get("montant")), */
-        // Add other form fields as needed
-        createdAt: Date.now(),
-    });
+    try {
 
+        const formValues = { ...Object.fromEntries(formData.entries()) };
+        if (!formValues.montant) return { success: false, message: "Le montant est obligatoire", error: "Le montant est obligatoire" };
 
-    const clientId = formData.get("clients") as string;
-    if (!clientId) return;
-
-   
-
-    if (formData.get("mode") === "NOUVEAU") {
-
-        const netPaye = formData.get("montant_total") as string
-        if (!netPaye) return
-        // const normalizedName = dossierName.trim().toLowerCase().replace(/\s+/g, '-');
-        const dossierRef = adminDb.collection("dossiers")
-            .where("clientId", "==", clientId)
-
-        const resps = await dossierRef.get();
-
-        // const next = last + 1;
-        // const formatted = String(next).padStart(3, "0");
-        const ref = adminDb.collection("dossiers").doc();
-        const normalizedName = formData.get("dossier_name") as string;
-
-        if (!normalizedName) return;
-
-
-        // const normalizedName = normalizedName.concat(`-${normalizedName + 1}`);
-
-        console.log("Number of existing dossiers for this client:", ref.id);
-        await ref.set({
-            id: ref.id,
-            clientId: clientId,
-            dossierName: normalizedName,
-            // dossierRef: id,
-            montant_total: formData.get("montant_total") as string,
-            status: formData.get("montant_total") === formData.get("montant") ? "paid" : "pending",
-            versement: [
-                {
-                    montant: formData.get("montant") as string,
-                    method: formData.get("payment_method") as string,
-                    date: Date.now(),
-                },
-            ],
-            mode: formData.get("mode") as string,
+        // await sleep(2000); // Simulate a delay for async operation
+        await adminDb.collection("mouvement").add({
+            ...formValues,
+            /*  type: formData.get("type") as string,
+             name: formData.get("libelle") as string,
+             montant: Number(formData.get("montant")), */
+            // Add other form fields as needed
             createdAt: Date.now(),
         });
-        // await adminDb.collection("dossiers").add({
-        //     clientId: clientId,
-        //     dossierName: normalizedName,
-        //     montant_total: formData.get("montant_total") as string,
-        //     status: formData.get("montant_total") === formData.get("montant") ? "paid" : "pending",
-        //     versement: [
-        //         {
-        //             montant: formData.get("montant") as string,
-        //             method: formData.get("payment_method") as string,
-        //             date: Date.now(),
-        //         },
-        //     ],
-        //     mode: formData.get("mode") as string,
-        //     createdAt: Date.now(),
-        // });
-    } else if (formData.get("mode") === "ACOMPTE") {
-        console.log("Adding versement to existing dossier");
-        const dossierId = formData.get("dossier_name") as string;
-        const dossierRef = adminDb.collection("dossiers")
-            .where("clientId", "==", clientId)
-            .where("id", "==", dossierId);
 
-        const snapshot = await dossierRef.get();
-        if (!snapshot.empty) {
-            const dossierDoc = snapshot.docs[0];
-            const versement = dossierDoc.data().versement || [];
-            versement.push({
-                montant: formData.get("montant") as string,
-                method: formData.get("payment_method") as string,
-                date: Date.now(),
-            });
-            await adminDb.collection("dossiers").doc(dossierDoc.id).update({
-                versement: versement,
-                updatedAt: Date.now(),
-            });
+        if (formData.get("type") === "encaissement") {
+
+            const clientId = formData.get("clients") as string;
+            if (!clientId) return { success: false, message: "Client ID is required", error: "Client ID is required" };
+
+
+
+            if (formData.get("mode") === "NOUVEAU") {
+
+                const netPaye = formData.get("montant_total") as string
+                const montant = formData.get("montant") as string
+                if (!netPaye) return { success: false, message: "Montant total requis pour les nouveaux dossiers", error: "Montant total requis pour les nouveaux dossiers" };
+                if (Number(montant) > Number(netPaye)) return { success: false, message: "Montant doit être inférieur ou égal au montant total pour les nouveaux dossiers", error: "Montant doit être inférieur ou égal au montant total pour les nouveaux dossiers" };
+
+                // const normalizedName = dossierName.trim().toLowerCase().replace(/\s+/g, '-');
+                const dossierRef = adminDb.collection("dossiers")
+                    .where("clientId", "==", clientId)
+                    .where("dossierName", "==", formData.get("dossier_name") as string);
+
+
+                const resps = await dossierRef.get();
+
+                if (!resps.empty) { throw new Error("Un dossier avec ce nom existe déjà pour ce client."); } // const last = resps.docs.length > 0 ? resps.docs[resps.docs.length - 1].data().dossierRef : 0;
+
+                // const next = last + 1;
+                // const formatted = String(next).padStart(3, "0");
+                const ref = adminDb.collection("dossiers").doc();
+                const normalizedName = formData.get("dossier_name") as string;
+
+                if (!normalizedName) return { success: false, message: "Le nom du dossier est requis pour les nouveaux dossiers.", error: "Le nom du dossier est requis pour les nouveaux dossiers." };
+
+
+                // const normalizedName = normalizedName.concat(`-${normalizedName + 1}`);
+
+                console.log("Number of existing dossiers for this client:", ref.id);
+                await ref.set({
+                    id: ref.id,
+                    clientId: clientId,
+                    dossierName: normalizedName,
+                    montant_total: netPaye,
+                    status: netPaye === montant ? "paid" : "pending",
+                    versement: [
+                        {
+                            montant: montant,
+                            method: formData.get("payment_method") as string,
+                            date: Date.now(),
+                        },
+                    ],
+                    mode: formData.get("mode") as string,
+                    createdAt: Date.now(),
+                });
+
+            } else if (formData.get("mode") === "ACOMPTE") {
+
+                // Adding versement to existing dossier 
+                const dossierId = formData.get("dossier_name") as string;
+                const dossierRef = adminDb.collection("dossiers")
+                    .where("clientId", "==", clientId)
+                    .where("id", "==", dossierId);
+
+                const snapshot = await dossierRef.get();
+                if (!snapshot.empty) {
+                    const dossierDoc = snapshot.docs[0];
+                    const versement = dossierDoc.data().versement || [];
+                    const totalVersement = versement.reduce((sum: number, v: any) => Number(sum) + (Number(v.montant) || 0), 0);
+                    const montant = formData.get("montant") as string;
+                    const montantTotal = dossierDoc.data().montant_total || "0";
+
+                    if (Number(totalVersement) + Number(montant) > Number(montantTotal)) {
+                        return { success: false, message: "Le montant total des versements ne peut pas dépasser le montant total du dossier.", error: "Le montant total des versements ne peut pas dépasser le montant total du dossier." };
+                    }
+                    versement.push({
+                        montant: montant,
+                        method: formData.get("payment_method") as string,
+                        date: Date.now(),
+                    });
+
+                    await adminDb.collection("dossiers").doc(dossierDoc.id).update({
+                        versement: versement,
+                        updatedAt: Date.now(),
+                    });
+                }
+            }
+        } else if (formData.get("type") === "decaissement") {
+            const clientId = formData.get("clients") as string;
+            if (!clientId) return { success: false, message: "Client ID is required", error: "Client ID is required" };
+
+            const dossierId = formData.get("dossier_name") as string;
+            const dossierRef = adminDb.collection("dossiers")
+                .where("clientId", "==", clientId)
+                .where("id", "==", dossierId);
+
+            const snapshot = await dossierRef.get();
+            if (!snapshot.empty) {
+                const dossierDoc = snapshot.docs[0];
+                const payement = dossierDoc.data().payements || [];
+                const montant = formData.get("montant") as string;
+
+                payement.push({
+                    montant: montant,
+                    payement: formData.get("payement") as string,
+                    date: Date.now(),
+                });
+
+                await adminDb.collection("dossiers")
+                    .doc(dossierDoc.id)
+                    .update({
+                        payements: payement,
+                        updatedAt: Date.now(),
+                    });
+            }
+
+            // Handle decaissement logic if needed TODO
         }
+        revalidatePath("/dashboard/tables");
+        revalidatePath("/dashboard/clients");
+        revalidatePath("/dashboard");
+        return { success: true, message: "Mouvement added successfully.", error: null };
+
+    } catch (error) {
+        console.error("Error adding mouvement:", error);
+        return {
+            error: error instanceof Error ? error.message : "An unknown error occurred.",
+            success: false,
+            message: error instanceof Error ? error.message : "An unknown error occurred.",
+        }; // Rethrow the error to be caught by the caller
     }
 
-
-    // await adminDb.collection("dossier").doc(clientId).update({
-    //     montant_total: formData.get("montant_total") as string,
-    //     updatedAt: Date.now(),
-    // });
-
-    //console.log("form", formData)
-    revalidatePath("/dashboard/tables");
-    revalidatePath("/dashboard/clients");
-    revalidatePath("/dashboard");
 }
 
 export async function handleSignout(formData: FormData) {

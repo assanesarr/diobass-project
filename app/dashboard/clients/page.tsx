@@ -9,7 +9,10 @@ export default async function ClientsPage() {
     const clinets = await adminDb.collection("clients").orderBy("createdAt").get().then(async (snapshot) => {
         const dossiers = await adminDb.collection("dossiers").get()
         const rsp = dossiers.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data(), dossiers: rsp.filter((d: any) => d.clientId === doc.id).sort((a: any, b: any) => b.createdAt - a.createdAt) }));
+        return snapshot.docs.map((doc) => ({
+             id: doc.id, ...doc.data(), 
+             dossiers: rsp.filter((d: any) => d.clientId === doc.id).sort((a: any, b: any) => b.createdAt - a.createdAt), 
+            }));
     }) as User[];
 
 

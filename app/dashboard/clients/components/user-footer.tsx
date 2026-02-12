@@ -3,17 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { User } from "./card-user";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { IconDotsVertical, IconTrash } from "@tabler/icons-react";
 import TrashBtn from "./trash-btn";
 import TrashDossier from "./trash-dossier";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { PencilIcon, ShareIcon } from "lucide-react";
-import { AlertDialog } from "@/components/ui/alert-dialog";
+import { BadgeCheckIcon} from "lucide-react";
+import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { Separator } from "@/components/ui/separator";
 
 
 
@@ -30,19 +28,22 @@ export default function FooterUser({ user, docs }: { user: any, docs: any[] }) {
         setDossiers(docs)
     }, [user])
 
+    console.log("Dossiers in FooterUser:", dossiers)
+
     return (
-        <Drawer direction={isMobile ? "bottom" : "right"}>
+        <Drawer direction={isMobile ? "bottom" : "right"} >
             <DrawerTrigger asChild>
-                <Button variant="ghost" className="text-blue-500 hover:underline text-sm w-fit px-0 text-left">
+                <Button variant="ghost" className="font-bold hover:underline text-sm w-fit px-0 text-left">
                     {user.name}
                 </Button>
             </DrawerTrigger>
-            <DrawerContent>
+            <DrawerContent >
                 <DrawerHeader className="gap-1">
-                    <DrawerTitle>{user.name}</DrawerTitle>
+                    <DrawerTitle className="text-xl font-bold">{user.name}</DrawerTitle>
                     <DrawerDescription></DrawerDescription>
                 </DrawerHeader>
                 <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+                    <h1 className="text-xl font-bold">Encaissement </h1>
                     <Accordion type="single" collapsible >
                         {
                             dossiers.length === 0 ? (
@@ -108,6 +109,75 @@ export default function FooterUser({ user, docs }: { user: any, docs: any[] }) {
                         }
 
                     </Accordion>
+                    <Separator />
+                    <h1 className="text-xl font-bold">Decaissement Paiements</h1>
+                    <div>
+                        <Accordion type="single" collapsible >
+                            {
+                                dossiers.length === 0 ? (
+                                    <p>No dossiers found for this client.</p>
+                                ) :
+                                    dossiers.map((dossier: any, index: number) => {
+                                        const totalVersement = dossier.versement.reduce((sum: number, v: any) => Number(sum) + (Number(v.montant) || 0), 0);
+                                        const totalPayement = dossier?.payements && dossier.payements.reduce((sum: number, p: any) => Number(sum) + (Number(p.montant) || 0), 0);
+                                        return (
+                                            <AccordionItem key={index} value={`item-${index}`}>
+                                                <AccordionTrigger >
+                                                    Dossier {dossier.dossierName}
+                                                </AccordionTrigger>
+                                                <AccordionContent  >
+                                                    {
+                                                        dossier.payements && dossier.payements.length > 0 ?
+                                                            <>
+
+                                                                {
+                                                                    dossier.payements.map((payement: any, pIndex: number) => (
+                                                                        <Item variant="outline" size="sm" key={pIndex}>
+                                                                            <ItemMedia>
+                                                                                <BadgeCheckIcon className="size-5 text-green-500" />
+                                                                            </ItemMedia>
+                                                                            <ItemContent>
+                                                                                <ItemTitle>{payement.payement}</ItemTitle>
+                                                                            </ItemContent>
+                                                                            <ItemActions>
+                                                                                {payement.montant}
+                                                                            </ItemActions>
+                                                                        </Item>
+                                                                    ))
+                                                                }
+
+                                                                <Item variant="muted" size="sm">
+                                                                    <ItemContent>
+                                                                        <ItemTitle>Total Payements</ItemTitle>
+                                                                    </ItemContent>
+                                                                    <ItemActions>
+                                                                        {totalPayement}
+                                                                    </ItemActions>
+                                                                </Item>
+                                                                <Item variant="muted" size="sm">
+
+                                                                    <ItemContent>
+                                                                        <ItemTitle className="font-bold">Total Versement</ItemTitle>
+                                                                    </ItemContent>
+                                                                    <ItemActions>
+                                                                        {totalVersement}
+                                                                    </ItemActions>
+                                                                </Item>
+                                                            </>
+
+                                                            : (
+                                                                <p className="text-sm text-muted-foreground">No payements found for this dossier.</p>
+                                                            )
+
+                                                    }
+
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        )
+                                    })
+                            }
+                        </Accordion>
+                    </div>
                 </div>
                 <DrawerFooter>
                     <DrawerClose asChild>
@@ -115,7 +185,7 @@ export default function FooterUser({ user, docs }: { user: any, docs: any[] }) {
                     </DrawerClose>
                 </DrawerFooter>
             </DrawerContent>
-        </Drawer>
+        </Drawer >
 
     );
 }
