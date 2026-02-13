@@ -1,6 +1,4 @@
 'use client'
-import { BadgeCheckIcon, ChevronRightIcon, Divide } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import {
     Item,
     ItemActions,
@@ -22,18 +20,16 @@ export default function DashboardItems({ mouvementData }: { mouvementData: any[]
     mouvementData.sort((a, b) => b.createdAt - a.createdAt)
 
 
-
+    console.log(mouvementData)
     return (
         <>
             <ShowRecu open={open} setOpen={setOpen} id={id} data={mouvementData} />
             <Card className="@container/card">
                 <CardContent className="grid gap-4">
-                    {mouvementData.slice(0, 10).map(mouvement => (
-                        <Item key={mouvement.id} variant="outline" onClick={() => {setId(mouvement.id); setOpen(true)}}>
+                    {mouvementData.slice(0, 5).map(mouvement => (
+                        <Item key={mouvement.id} variant="outline" onClick={() => { setId(mouvement.id); setOpen(true) }}>
                             <ItemContent>
-                                <ItemTitle>{mouvement.libelle}</ItemTitle>
-
-                                {/* <ItemTitle>{mouvement.type === 'encaissement' ? 'Encaissement' : 'Decaissement'}</ItemTitle> */}
+                                <ItemTitle>{mouvement.type === 'encaissement' ? 'Encaissement' : 'Decaissement'} {mouvement.payement}</ItemTitle>
                                 <ItemDescription>
                                     {new Date(mouvement.createdAt).toLocaleDateString('fr-FR', {
                                         year: 'numeric',

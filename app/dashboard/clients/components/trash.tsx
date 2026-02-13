@@ -9,15 +9,19 @@ import { toast } from "sonner";
 
 export default function TrashComponent({ user }: { user: User }) {
 
-    const destr = () => {
-        deleteClient(user.id);
-        toast.success("Client deleted successfully!");
+    const destr = async () => {
+        const result = await deleteClient(user.id);
+        if (result.success) {
+            toast.success("Client supprimé avec succès !");
+        } else {
+            toast.error("Échec de la suppression du client. Veuillez réessayer SVP.");
+        }
     }
 
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive">
+                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700">
                     <IconTrash />
                 </Button>
             </AlertDialogTrigger>
@@ -26,8 +30,7 @@ export default function TrashComponent({ user }: { user: User }) {
                     <AlertDialogTitle>
                         Êtes-vous absolument sûr ?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Cette action est irréversible. Elle supprimera définitivement cette
-compte et vos données de nos serveurs.
+                        Cette action est irréversible. Elle supprimera définitivement ce client et ses données de nos serveurs.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

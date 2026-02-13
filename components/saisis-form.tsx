@@ -14,13 +14,13 @@ import { Label } from "@/components/ui/label"
 import { SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar"
 import { IconCirclePlusFilled } from "@tabler/icons-react"
 import { addMouvement } from "@/lib/actions"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select"
 import { toast } from "sonner"
 import { useFormState, useFormStatus } from "react-dom"
-import { SubmitButton } from "./submit-btn"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
 import { AlertCircleIcon } from "lucide-react"
+import { Spinner } from "./ui/spinner"
 
 const payements = [
     "Debarquement",
@@ -45,22 +45,14 @@ const payements = [
 const initialState = { error: null }
 
 export function DialogSaisis({ clients }: { clients?: any[] }) {
-    const [type, setType] = React.useState<"encaissement" | "decaissement">("encaissement");
-    const [modeEncaissement, setModeEncaissement] = React.useState<string>("NOUVEAU");
-    const [methodPayement, setMethodPayement] = React.useState<string>("")
-    const [clientId, setClientId] = React.useState<string>("");
-    const [dossiers, setDossiers] = React.useState<any[]>([]);
-    // const { pending } = useFormStatus()
+    const [type, setType] = useState<"encaissement" | "decaissement">("encaissement");
+    const [modeEncaissement, setModeEncaissement] = useState<string>("NOUVEAU");
+    const [methodPayement, setMethodPayement] = useState<string>("")
+    const [clientId, setClientId] = useState<string>("");
+    const [dossiers, setDossiers] = useState<any[]>([]);
+    const [open, setOpen] = useState(false);
     const [state, formAction] = useFormState(addMouvement, null)
 
-    // const handleActionSubmit = async (formData: FormData) => {
-    //     const result = await addMouvement(formData)
-
-    //     if (!result?.success) {
-    //          setError(result?.message)
-    //         toast.error(result?.message)
-    //     }
-    // }
 
 
     useEffect(() => {
@@ -80,22 +72,22 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
             .catch((error) => {
                 console.error("Error fetching API:", error);
             });
-        console.log("Selected Client ID:", clientId);
+        
 
     }, [clientId]);
 
     useEffect(() => {
-        console.log("Form State Updated:", state);
         if (state?.error) {
             toast.error(state.error);
         } else if (state?.success) {
-            toast.success("Mouvement added successfully!");
+            toast.success("Enregistrement effectué avec succès!");
+            setOpen(false);
         }
     }, [state]);
 
 
     return (
-        <Dialog onOpenChange={(test) => { }}>
+        <Dialog onOpenChange={setOpen} open={open}>
             <DialogTrigger asChild>
                 <SidebarMenuItem className="flex items-center gap-2">
                     <SidebarMenuButton
@@ -120,7 +112,7 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                 {state?.error && (
                     <Alert variant="destructive" className="max-w-md">
                         <AlertCircleIcon />
-                        <AlertTitle>Enregistrement failed</AlertTitle>
+                        <AlertTitle>Échec de l'enregistrement</AlertTitle>
                         <AlertDescription>
                             {state?.error}
                         </AlertDescription>
@@ -132,10 +124,10 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                         <DialogTitle className={type === "decaissement" ? "text-red-600" : "text-green-600"}>Operation {type} </DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4">
-                        <div className="grid gap-3">
+                        {/* <div className="grid gap-3">
                             <Label htmlFor="name-1">Libelle</Label>
                             <Input id="name-1" name="libelle" />
-                        </div>
+                        </div> */}
 
                         <div className="grid grid-cols-2 gap-3">
                             <div className="flex flex-col gap-3">
@@ -239,13 +231,13 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                             }
 
                             <div className="grid gap-3">
-                                <Label htmlFor="montant-1">Montant</Label>
+                                <Label htmlFor="montant-1">Montant versé</Label>
                                 <Input id="montant-1" name="montant" />
                             </div>
                             {
                                 type === "encaissement" && modeEncaissement === "NOUVEAU" && (
                                     <div className="grid gap-3">
-                                        <Label htmlFor="montant-total">Montant Total</Label>
+                                        <Label htmlFor="montant-total">Montant Total a payer</Label>
                                         <Input id="montant-total" name="montant_total" />
                                     </div>
                                 )
@@ -347,5 +339,20 @@ export function DialogSaisis({ clients }: { clients?: any[] }) {
                 </form>
             </DialogContent>
         </Dialog >
+    )
+}
+
+
+function SubmitButton() {
+    const { pending } = useFormStatus()
+
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            className="disabled:opacity-50"
+        >
+            {pending ? <Spinner /> : "Enregistrer"}
+        </Button>
     )
 }

@@ -14,12 +14,11 @@ export default function ShowRecu(
 ) {
 
     const recu = data.find(d => d.id === id)
-    console.log(recu)
+ 
 
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="flex flex-col justify-center items-center gap-2" >
@@ -28,7 +27,7 @@ export default function ShowRecu(
                     </DialogTitle>
                     <DialogDescription>
                         <div className="flex justify-center">
-                            {recu?.libelle}
+                           Paiement {recu?.payement}
                         </div>
                         <Item >
                             <ItemContent>

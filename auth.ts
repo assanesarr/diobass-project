@@ -38,12 +38,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         
         const user = snapshot.docs[0].data();
 
-        // const data = await docRef.get();
-        // logic to verify if the user exists
-        // const user = data.data();
-
-        console.log("User fetched from authorize:", user)
-
         if (!user) {
           // No user found, so this is their first attempt to login
           // Optionally, this is also the place you could do a user registration

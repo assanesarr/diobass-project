@@ -100,7 +100,7 @@ export async function addMouvement(prevState: FormState | null, formData: FormDa
                 await ref.set({
                     id: ref.id,
                     clientId: clientId,
-                    dossierName: normalizedName,
+                    dossierName: normalizedName.toUpperCase(),
                     montant_total: netPaye,
                     status: netPaye === montant ? "paid" : "pending",
                     versement: [
@@ -196,44 +196,88 @@ export async function handleSignout(formData: FormData) {
     await signOut()
 }
 
-export async function addClient(values: {
-    name: string;
-    role: string;
-    address: string;
-    phone: string;
-    email: string;
-    avatar: string;
-}) {
-    await adminDb.collection("clients").add({
-        ...values,
-        createdAt: Date.now(),
-    });
+export async function addClient(prevState: FormState | null, formData: FormData): Promise<FormState> {
 
-    revalidatePath("/dashboard/clients");
+    // console.log("Form data received in addClient:", prevState); // Log the form data to see if it's being received correctly
+
+    try {
+        if (!formData.get("name")) {
+            return { success: false, message: "Le nom du client est obligatoire.", error: "Le nom du client est obligatoire." };
+        }
+        const dossierRef = adminDb.collection("clients")
+            .where("name", "==", formData.get("name") as string);
+
+        const values = {
+            name: formData.get("name") as string,
+            // role: formData.get("role") as string,
+            address: formData.get("address") as string,
+            phone: formData.get("phone") as string,
+            email: formData.get("email") as string,
+            // avatar: formData.get("avatar") as string,
+        };
+        const resps = await dossierRef.get();
+
+        if (!resps.empty) { throw new Error("Un client avec ce nom existe déjà."); }
+
+        await adminDb.collection("clients").add({
+            ...values,
+            createdAt: Date.now(),
+        });
+
+        revalidatePath("/dashboard/clients");
+        return { success: true, message: "Client added successfully.", error: null };
+    } catch (error) {
+        console.error("Error adding client:", error);
+        return { success: false, message: error instanceof Error ? error.message : "An unknown error occurred.", error: error instanceof Error ? error.message : "An unknown error occurred." };
+    }
 }
 
 export async function updateClient(formData: FormData) {
 
-    const clientId = formData.get("id") as string;
+    try {
+        const clientId = formData.get("id") as string;
+        if (!clientId) return { success: false, message: "Client ID is required", error: "Client ID is required" };
 
-    const values = {
-        name: formData.get("name") as string,
-        role: formData.get("role") as string,
-        address: formData.get("address") as string,
-        phone: formData.get("phone") as string,
-        email: formData.get("email") as string,
-    };
-    await adminDb.collection("clients").doc(clientId).update({
-        ...values,
-        updatedAt: Date.now(),
-    });
+        const values = {
+            name: formData.get("name") as string,
+            // role: formData.get("role") as string,
+            address: formData.get("address") as string,
+            phone: formData.get("phone") as string,
+            email: formData.get("email") as string,
+            // avatar: formData.get("avatar") as string,
+            updatedAt: Date.now(),
+        };
 
-    revalidatePath("/dashboard/clients");
+        await adminDb.collection("clients").doc(clientId).update(values);
+
+        revalidatePath("/dashboard/clients");
+        return { success: true, message: "Client updated successfully.", error: null };
+    } catch (error) {
+        console.error("Error updating client:", error);
+        return { success: false, message: error instanceof Error ? error.message : "An unknown error occurred.", error: error instanceof Error ? error.message : "An unknown error occurred." };
+    }
 }
 
 export async function deleteClient(clientId: string) {
+   try {   await adminDb.collection("mouvements").where("clientId", "==", clientId).get().then((snapshot) => {
+        snapshot.docs.forEach((doc) => {
+            adminDb.collection("mouvements").doc(doc.id).delete();
+        });
+    });
+    await adminDb.collection("dossiers").where("clientId", "==", clientId).get().then((snapshot) => {
+        snapshot.docs.forEach((doc) => {
+            adminDb.collection("dossiers").doc(doc.id).delete();
+        });
+    });
     await adminDb.collection("clients").doc(clientId).delete();
+
     revalidatePath("/dashboard/clients");
+    
+    return { success: true, message: "Client supprimé avec succès.", error: null }
+   } catch (error) {
+    console.error("Error deleting client:", error);
+    return { success: false, message: error instanceof Error ? error.message : "An unknown error occurred.", error: error instanceof Error ? error.message : "An unknown error occurred." }
+   }
 }
 
 

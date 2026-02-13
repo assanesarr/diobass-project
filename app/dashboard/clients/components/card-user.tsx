@@ -122,6 +122,13 @@ export default function CardUser({ users }: { users: User[] }) {
                 )
             },
         },
+        {
+            accessorKey: "actions",
+            header: "Actions",
+            cell({ row }) {
+                return <TrashComponent user={row.original} />
+            },
+        },
     ]
 
     const table = useReactTable({
